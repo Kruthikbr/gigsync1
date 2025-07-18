@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management | GigSync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tasks.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/dashboard" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/employer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/tasks" class="active"><i class="fas fa-plus-circle"></i>Add Task</a></li>
+            <li><a href="/freelancer_list"><i class="fas fa-users"></i> Freelancer</a></li>
+            <li><a href="/view_task"><i class="fas fa-tasks"></i>View Tasks</a></li>
+            <li><a href="/messages"><i class="fas fa-envelope"></i> Messages</a></li>
+            <li><a href="/my_tasks">My Tasks</a></li>
+        </ul>
+        </ul>
+        <div class="user-profile">
+            <a href="/" style="text-decoration: none;" class="btn btn-primary"><i class="fas fa-sign-out"></i> Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-tasks"></i> Task Management</h1>
+            <a class="btn btn-primary" style="text-decoration: none;"  href="/view_task">
+                <i class="fas fa-list"></i> View Task
+            </a>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Task Form -->
+        <form id="task-form" class="task-form" method="POST" action="{{ url_for('add_task') }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="task-title"><i class="fas fa-heading"></i> Task Title</label>
+                    <input type="text" id="task-title" name="task-title" class="form-control" placeholder="Enter task title" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-category"><i class="fas fa-tag"></i> Category</label>
+                    <select id="task-category" name="task-category" class="form-control" required>
+                        <option value="">Select category</option>
+                        <option value="web-development">Web Development</option>
+                        <option value="graphic-design">Graphic Design</option>
+                        <option value="content-writing">Content Writing</option>
+                        <option value="digital-marketing">Digital Marketing</option>
+                        <option value="mobile-development">Mobile Development</option>
+                        <option value="mobile-development">Finance & Accounting</option>
+                        <option value="mobile-development">Sales & Marketing</option>
+                        <option value="mobile-development">Writing & Translation</option>
+                        <option value="mobile-development">Design & Creative</option>
+                        <option value="mobile-development">Legal</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="task-budget"><i class="fas fa-rupee-sign"></i> Budget</label>
+                    <input type="number" id="task-budget" name="task-budget" class="form-control" placeholder="Enter budget amount" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="task-deadline"><i class="fas fa-calendar-alt"></i> Deadline</label>
+                    <input type="date" id="task-deadline" name="task-deadline" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="task-description"><i class="fas fa-align-left"></i> Description</label>
+                <textarea id="task-description" name="task-description" class="form-control" placeholder="Provide detailed description of the task..." required></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="task-skills"><i class="fas fa-tools"></i> Required Skills</label>
+                    <input type="text" id="task-skills" name="task-skills" class="form-control" placeholder="e.g. JavaScript, Photoshop, SEO" required>
+                    <small class="text-muted">Separate skills with commas</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="reset" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Add Task
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
+</body>
+</html>

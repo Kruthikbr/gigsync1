@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Tasks | GigSync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/freelancer_tasks.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{{ url_for('tasks') }}" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/freelancer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('freelancer_tasks') }}" class="active"><i class="fas fa-tasks"></i> Browse Tasks</a></li>
+            <li><a href="{{ url_for('my_assigned_tasks') }}"><i class="fas fa-clipboard-check"></i> My Tasks</a></li>
+            <li><a href="/freelancer_profile"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+        <div class="user-profile">
+            <a href="/" style="text-decoration: none;" class="btn btn-primary"><i class="fas fa-sign-out"></i> Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-list"></i> Available Tasks</h1>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <div class="search-input">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search tasks by title, description, or skills...">
+            </div>
+            <div class="filter-options">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    {% set categories = [] %}
+                    {% for row in tasks %}
+                        {% if row[2] not in categories %}
+                            {% set _ = categories.append(row[2]) %}
+                            <option value="{{ row[2] }}">{{ row[2] }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <select id="statusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Task Cards -->
+        <div class="task-cards" id="card-view">
+            {% for row in tasks %}
+            <div class="task-card" data-title="{{ row[1] }}" data-description="{{ row[3] }}" data-category="{{ row[2] }}" data-status="{{ row[8] }}" data-skills="{{ row[6] }}">
+                <div class="task-card-header">
+                    <div>
+                        <div class="task-id">#{{ row[0] }}</div>
+                        <div class="task-title">{{ row[1] }}</div>
+                        <div class="task-category">{{ row[2] }}</div>
+                    </div>
+                    <div>
+                        {% if row[8] == 'pending' %}
+                            <span class="task-status status-pending"><i class="fas fa-clock"></i> Pending</span>
+                        {% elif row[8] == 'in-progress' %}
+                            <span class="task-status status-in-progress"><i class="fas fa-spinner fa-spin"></i> In Progress</span>
+                        {% elif row[8] == 'completed' %}
+                            <span class="task-status status-completed"><i class="fas fa-check"></i> Completed</span>
+                        {% else %}
+                            <span class="task-status status-overdue"><i class="fas fa-exclamation-circle"></i> Overdue</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="task-content">
+                    <div class="task-description">{{ row[3] }}</div>
+                    <div class="task-info">
+                        <div class="task-info-item">
+                            <i class="fas fa-money-bill-wave"></i> Rs. {{ row[4] }}
+                        </div>
+                        <div class="task-info-item">
+                            <i class="fas fa-calendar-alt"></i> {{ row[5] }}
+                        </div>
+                    </div>
+                    <div class="task-skills">
+                        {% for skill in row[6].split(',') %}
+                            <span class="skill-badge">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="task-footer">
+                    {% if row[7]|int == freelancer_id %}
+                        <!-- If task is assigned to current freelancer, show link to My Tasks section -->
+                        <span class="assigned-badge"><i class="fas fa-check-circle"></i> Assigned to you</span>
+                        <div class="button-group">
+                            <a href="{{ url_for('my_assigned_tasks') }}" class="btn btn-primary">
+                                <i class="fas fa-clipboard-check"></i> Go to My Tasks
+                            </a>
+                            <a href="{{ url_for('freelancer_task_details', task_id=row[0]) }}" class="btn btn-secondary">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                        </div>
+                    {% elif not row[7] %}
+                        <!-- Show Request button only if task is unassigned -->
+                        <div class="button-group">
+                            <a href="/sendrequest/{{row[0]}}" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Request
+                            </a>
+                            <a href="{{ url_for('freelancer_task_details', task_id=row[0]) }}" class="btn btn-secondary">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                        </div>
+                    {% else %}
+                        <!-- Task is assigned to someone else -->
+                        <span class="assigned-badge"><i class="fas fa-user-check"></i> Already Assigned</span>
+                        <a href="{{ url_for('freelancer_task_details', task_id=row[0]) }}" class="btn btn-secondary">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults">
+            <i class="fas fa-search" style="font-size: 32px; color: #999; margin-bottom: 10px;"></i>
+            <h3>No matching tasks found</h3>
+            <p>Try adjusting your search criteria or filters</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/freelancer_tasks.js') }}"></script>
+</body>
+</html>

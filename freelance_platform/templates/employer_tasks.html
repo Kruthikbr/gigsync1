@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Posted Tasks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employer_tasks.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/employer_dashboard" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/employer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/tasks"><i class="fas fa-plus-circle"></i>Add Task</a></li>
+            <li><a href="/freelancer_list"><i class="fas fa-users"></i> Freelancer</a></li>
+            <li><a href="/view_task"><i class="fas fa-tasks"></i>View Tasks</a></li>
+            <li><a href="/messages"><i class="fas fa-envelope"></i> Messages</a></li>
+            <li><a href="/my_tasks" class="active">My Tasks</a></li>
+        </ul>
+        <div class="user-profile">
+            <a href="/" style="text-decoration: none;" class="btn btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-list"></i>My Tasks</h1>
+            <div class="view-toggle">
+                <span>View:</span>
+                <button class="view-toggle-btn active" id="cardViewBtn" title="Card View">
+                    <i class="fas fa-th-large"></i>
+                </button>
+            </div>
+            <!-- Top-right Add New Task button - only visible when tasks exist -->
+            {% if tasks %}
+            <a href="/tasks" class="btn btn-primary" id="headerAddTaskBtn">
+                <i class="fas fa-plus"></i> Add New Task
+            </a>
+            {% endif %}
+        </div>
+
+        {% if tasks %}
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search tasks by title, description, or skills...">
+                </div>
+                <div class="filter-options">
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                        {% set categories = [] %}
+                        {% for row in tasks %}
+                            {% if row[2] not in categories %}
+                                {% set _ = categories.append(row[2]) %}
+                                <option value="{{ row[2] }}">{{ row[2] }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <select id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="overdue">Overdue</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="task-cards" id="card-view">
+            {% for row in tasks %}
+            <div class="task-card" data-title="{{ row[1] }}" data-description="{{ row[3] }}" data-category="{{ row[2] }}" data-status="{{ row[8] }}" data-skills="{{ row[6] }}">
+                <div class="task-card-header">
+                    <div>
+                        <div class="task-id visually-hidden">#{{ row[0] }}</div>
+                        <div class="task-title">{{ row[1] }}</div>
+                        <div class="task-category">{{ row[2] }}</div>
+                    </div>
+                    <div>
+                        {% if row[8] == 'pending' %}
+                            <span class="task-status status-pending"><i class="fas fa-clock"></i> Pending</span>
+                        {% elif row[8] == 'in-progress' %}
+                            <span class="task-status status-in-progress"><i class="fas fa-spinner fa-spin"></i> In Progress</span>
+                        {% elif row[8] == 'completed' %}
+                            <span class="task-status status-completed"><i class="fas fa-check"></i> Completed</span>
+                        {% else %}
+                            <span class="task-status status-overdue"><i class="fas fa-exclamation-circle"></i> Overdue</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="task-content">
+                    <div class="task-description">{{ row[3] }}</div>
+                    <div class="task-info">
+                        <div class="task-info-item">
+                            <i class="fas fa-money-bill-wave"></i> Rs. {{ row[4] }}
+                        </div>
+                        <div class="task-info-item">
+                            <i class="fas fa-calendar-alt"></i> {{ row[5] }}
+                        </div>
+                    </div>
+                    <div class="task-skills">
+                        {% for skill in row[6].split(',') %}
+                            <span class="skill-badge">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="task-footer">
+                    {% if row[-1] %}
+                    <!-- This task has an accepted request -->
+                    <a href="/view_result/{{ row[0] }}" class="btn btn-outline">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="/delete_task/{{ row[0] }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this task?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                    <a href="/rate_task/{{ row[7] }}" class="btn btn-warning">
+                        <i class="fas fa-star"></i> Rate
+                    </a>
+                    <button class="btn btn-success" onclick="showPayment('{{ row[0] }}', '{{ row[4] }}')">
+                        <i class="fas fa-money-bill-wave"></i> Pay
+                    </button>
+                    {% else %}
+                    <!-- Not accepted -->
+                    <a href="/view_request/{{ row[0] }}" class="btn btn-primary">
+                        <i class="fas fa-clipboard-list"></i> View Requests
+                    </a>
+                    <a href="/delete_task/{{ row[0] }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this task?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                    {% endif %}
+
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+
+            <!-- No Results Message -->
+            <div class="no-results" id="noResults">
+                <i class="fas fa-search" style="font-size: 32px; color: #999; margin-bottom: 10px;"></i>
+                <h3>No matching tasks found</h3>
+                <p>Try adjusting your search criteria or filters</p>
+            </div>
+        {% else %}
+            <!-- Empty state with center button -->
+            <div class="empty-state">
+                <p>No tasks posted yet. Start posting now!</p>
+                <a href="/tasks" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add New Task
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal" style="display:none; position:fixed; z-index:1; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color:#fefefe; margin:15% auto; padding:20px; border:1px solid #888; width:30%; text-align:center;">
+            <span class="close" onclick="closeModal()" style="float:right; cursor:pointer;">&times;</span>
+            <h2>Payment</h2>
+            <div id="qrCodeContainer">
+                <p>Please scan the QR code to pay <span id="paymentAmount" style="font-weight:bold;"></span></p>
+                <img id="qrCodeImage" src="" alt="QR Code" style="width:200px; height:200px;">
+            </div>
+            <div id="paymentSuccess" style="display:none;">
+                <p style="color:green; font-weight:bold;">Payment Successful!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/employer_tasks.js') }}"></script>
+</body>
+</html>

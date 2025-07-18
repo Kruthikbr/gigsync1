@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GigSync - Recommended Courses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/resources.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo">
+                <i class="fas fa-handshake"></i> GigSync
+              </div>
+        </div>
+        <div class="nav-links">
+            <a href="/freelancer_dashboard"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="/freelancer_tasks"><i class="fas fa-user"></i>Browse Tasks</a>
+            <a href="{{ url_for('my_assigned_tasks') }}"><i class="fas fa-clipboard-check"></i> My Tasks</a>
+            <a href="/freelancer_profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="/"><i class="fas fa-sign-out"></i> Logout</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="header">
+            <h2>Resources for skill enhancement</h2>
+        </div>
+
+        {% if videos %}
+        <h3>Recommended Video</h3>
+        <div class="courses-container">
+            {% for row in videos %}
+            <div class="course-card">
+                <div class="course-header">
+                    <h3>{{row[1]}}</h3>
+                    <div class="university">
+                        <i class="fas fa-university"></i>
+                        <span>{{row[2]}}</span>
+                    </div>
+                </div>
+                <div class="course-footer">
+                    <a style="text-decoration: none;" href="{{row[3]}}" target="_blank" class="enroll-btn">
+                        <i class="fas fa-external-link-alt"></i>
+                        Learn more
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <br><br>
+
+        {% if pdfs %}
+        <h3>Recommended PDF</h3>
+        <div class="courses-container1">
+            {% for row in pdfs %}
+            <div class="course-card" style="width: 45%;">
+                <div class="course-header">
+                    <h3>{{row[1]}}</h3>
+                    <div class="university">
+                        <i class="fas fa-university"></i>
+                        <span>{{row[2]}}</span>
+                    </div>
+                </div>
+                <div class="course-footer" >
+                    <embed src="static\\{{row[3]}}" style="width: 100%;height: 500px;">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function Activity(name){
+            console.log(name);
+            $.ajax({
+                method:"get",
+                url:"/activities",
+                data:{text:name},
+                success:function(res){
+                    if(res){
+                        console.log(res);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management | GigSync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rate_task.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/employer_dashboard" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/employer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/tasks"><i class="fas fa-plus-circle"></i>Add Task</a></li>
+            <li><a href="/freelancer_list"><i class="fas fa-users"></i> Freelancer</a></li>
+            <li><a href="/view_task"><i class="fas fa-tasks"></i>View Tasks</a></li>
+            <li><a href="/messages"><i class="fas fa-envelope"></i> Messages</a></li>
+            <li><a href="/my_tasks" class="active">My Tasks</a></li>
+        </ul>
+        <div class="user-profile">
+            <a href="/" style="text-decoration: none;" class="btn btn-primary"><i class="fas fa-sign-out"></i> Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-list"></i> Review Freelancer Performance</h1>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+
+                <div class="rating-container">
+                    <form method="POST" action="{{ url_for('submit_rating') }}">
+                        <input type="hidden" name="eid" value="{{ eid }}">
+                        
+                        <div class="stars" id="stars">
+                            <i class="far fa-star star" data-rating="1"></i>
+                            <i class="far fa-star star" data-rating="2"></i>
+                            <i class="far fa-star star" data-rating="3"></i>
+                            <i class="far fa-star star" data-rating="4"></i>
+                            <i class="far fa-star star" data-rating="5"></i>
+                            <input type="hidden" name="rating" id="rating-input" required>
+                        </div>
+                        <div class="rating-text" id="rating-text">Select your rating</div>
+                        
+                        <div class="mb-3">
+                            <label for="review" class="form-label">Your Review:</label>
+                            <textarea class="form-control" id="review" name="review" rows="4" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Submit Rating</button>
+                    </form>
+                </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/rate_task.js') }}"></script>
+</body>
+</html>

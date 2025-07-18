@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | GigSync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/freelancer_profile.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{{ url_for('tasks') }}" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/freelancer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('freelancer_tasks') }}"><i class="fas fa-tasks"></i> Browse Tasks</a></li>
+            <li><a href="{{ url_for('my_assigned_tasks') }}"><i class="fas fa-clipboard-check"></i> My Tasks</a></li>
+            <li><a href="/freelancer_profile" class="active"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+        <div class="user-profile">
+            <a href="/" style="text-decoration: none;" class="btn btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Profile View -->
+        <div id="profile-view">
+            <div class="profile-header">
+                <img src="https://ui-avatars.com/api/?name={{ row[1] }}&background=4361ee&color=fff&size=150" alt="Profile Avatar" class="profile-avatar">
+                <h1 class="profile-name">{{ row[1] }}</h1>
+                <div class="profile-actions">
+                    <button id="edit-btn" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Profile</button>
+                </div>
+            </div>
+            
+            <div class="profile-content">
+                <div class="profile-section">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Basic Information</h2>
+                    <div class="profile-info-item">
+                        <i class="fas fa-envelope"></i>
+                        <span class="profile-info-label">Email:</span>
+                        <span class="profile-info-value">{{ row[2] }}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <i class="fas fa-star"></i>
+                        <span class="profile-info-label">Points:</span>
+                        <span class="profile-info-value">{{ row[5] }}</span>
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <h2 class="section-title"><i class="fas fa-tools"></i> Skills</h2>
+                    <div class="skills-container">
+                        {% for skill in row[3].split(',') %}
+                            <span class="skill-badge">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="profile-info-item">
+                    <i class="fas fa-level-up-alt"></i>
+                    <span class="profile-info-label">Skill Level:</span>
+                    <span class="profile-info-value">{{ row[6] if row[6] else "Not specified" }}</span>
+                </div>
+                
+                <div class="profile-section">
+                    <h2 class="section-title"><i class="fas fa-star"></i> Ratings & Stats</h2>
+                    <div class="profile-info-item">
+                        <i class="fas fa-trophy"></i>
+                        <span class="profile-info-label">Rating:</span>
+                        <span class="profile-info-value">{{ row[7] if row[7] else "Not rated yet" }}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span class="profile-info-label">Joined:</span>
+                        <span class="profile-info-value">{{ row[8] }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <form id="edit-form" class="edit-profile-form" action="{{ url_for('freelancer_profile') }}" method="POST" style="display: none;">
+            <h2 class="form-title">Edit Your Profile</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-control" value="{{ row[1] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ row[2] }}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="skills">Skills (comma separated)</label>
+                <input type="text" id="skills" name="skills" class="form-control" value="{{ row[3] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="skill_level">Skill Level</label>
+                <select id="skill_level" name="skill_level" class="form-control" required>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Expert">Expert</option>
+                </select>
+            </div>
+
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" value="{{ row[4] }}" required>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" id="cancel-btn" class="btn btn-outline"><i class="fas fa-times"></i> Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileView = document.getElementById('profile-view');
+            const editBtn = document.getElementById('edit-btn');
+            const editForm = document.getElementById('edit-form');
+            const cancelBtn = document.getElementById('cancel-btn');
+
+            // Make sure the edit form is initially hidden
+            editForm.style.display = 'none';
+
+            editBtn.addEventListener('click', function() {
+                profileView.style.display = 'none';
+                editForm.style.display = 'block';
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                profileView.style.display = 'block';
+                editForm.style.display = 'none';
+            });
+            
+            // Auto-hide flash messages after 5 seconds
+            const flashMessages = document.querySelectorAll('.flash-message');
+            if (flashMessages.length > 0) {
+                setTimeout(() => {
+                    flashMessages.forEach(msg => {
+                        msg.style.opacity = '0';
+                        setTimeout(() => {
+                            msg.style.display = 'none';
+                        }, 500);
+                    });
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

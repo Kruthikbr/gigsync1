@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/update.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/freelancer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('freelancer_tasks') }}" class="active"><i class="fas fa-tasks"></i> Browse Tasks</a></li>
+            <li><a href="{{ url_for('my_assigned_tasks') }}"><i class="fas fa-clipboard-check"></i> My Tasks</a></li>
+            <li><a href="/freelancer_profile"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+        </ul>
+        <div class="user-profile">
+            <span>Admin User</span>
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Profile" width="40" height="40" style="border-radius: 50%; margin-left: 1rem;">
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-tasks"></i> Task Update Form</h1>
+        </div>
+
+        <form class="task-form" id="taskUpdateForm" action="/update_task" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="task-id"><i class="fas fa-id-card"></i> Task ID</label>
+                <input type="text" id="task-id" name="tid" value="{{task_id}}" readonly class="form-control" placeholder="Enter task ID" required>
+            </div>
+
+            <div class="form-group">
+                <label for="task-status"><i class="fas fa-info-circle"></i> Status</label>
+                <select id="task-status" name="status" class="form-control" required>
+                    <option value="">Select status</option>
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-images"></i> Output Photos</label>
+                <div class="file-upload">
+                    <button type="button" class="file-upload-btn">
+                        <i class="fas fa-cloud-upload-alt"></i> Click to upload photos or drag and drop
+                    </button>
+                    <input type="file" class="file-upload-input" id="output-photos" name="photos" multiple accept="image/*">
+                </div>
+                <div class="file-preview" id="file-preview"></div>
+            </div>
+
+            <div class="form-actions">
+                <button type="reset" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Task
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/update.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management | GigSync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/messages.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/employer_dashboard" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/employer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/tasks"><i class="fas fa-plus-circle"></i>Add Task</a></li>
+            <li><a href="/freelancer_list"><i class="fas fa-users"></i> Freelancer</a></li>
+            <li><a href="/view_task"><i class="fas fa-tasks"></i>View Tasks</a></li>
+            <li><a href="/messages" class="active"><i class="fas fa-envelope"></i> Messages</a></li>
+            <li><a href="/my_tasks">My Tasks</a></li>
+        </ul>
+        <div class="user-profile">
+            <a href="/" style="text-decoration: none;" class="btn btn-primary"><i class="fas fa-sign-out"></i> Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-list"></i> List of Messages</h1>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Task Form -->
+        
+        <div id="task-form" class="task-form">
+            {% for row in msgs %}
+                <div class="message-card">
+                    <a href="/deletemessage/{{ row[0] }}" class="delete-btn" title="Delete"><i class="fas fa-trash"></i></a>
+                    <h4>{{ row[1] }}</h4>
+                    <p><strong>Email:</strong> {{ row[2] }}</p>
+                    <p><strong>Subject:</strong> {{ row[3] }}</p>
+                    <p><strong>Message:</strong> {{ row[4] }}</p>
+                    <p class="timestamp"><strong>Time:</strong> {{ row[5] }}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/messages.js') }}"></script>
+</body>
+</html>

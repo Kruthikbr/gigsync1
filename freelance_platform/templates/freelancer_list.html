@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelancer Directory | GigSync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/freelancer_list.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('tasks') }}" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/employer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/tasks"><i class="fas fa-plus-circle"></i>Add Task</a></li>
+            <li><a href="/freelancer_list" class="active"><i class="fas fa-users"></i> Freelancer</a></li>
+            <li><a href="/view_task"><i class="fas fa-tasks"></i>View Tasks</a></li>
+            <li><a href="/messages"><i class="fas fa-envelope"></i> Messages</a></li>
+            <li><a href="/my_tasks">My Tasks</a></li>
+        </ul>
+        <div class="user-profile">
+            <a href="/" class="btn btn-primary"><i class="fas fa-sign-out"></i> Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="margin-bottom: 1.5rem; color: var(--primary-color);"><i class="fas fa-users"></i> Freelancer Directory</h1>
+        <div class="employee-cards">
+            {% for row in freelancers %}
+            <div class="employee-card">
+                <div>
+                    <div class="employee-id">#{{ row[0] }}</div>
+                    <div class="employee-name">{{ row[1] }}</div>
+                    <div class="badge-experience {% if row[6]|lower == 'fresher' %}badge-fresher{% endif %}">{{ row[6] }}</div>
+                    <div class="employee-skills">
+                        {% for skill in row[3].split(',') %}
+                            <span class="skill-badge">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="employee-rating">
+                        <i class="fas fa-star" style="color: gold;"></i> <span>{{ row[7] }}</span>
+                    </div>
+                    <div id="details-{{ row[0] }}" class="employee-details" style="display: none;">
+                        <div class="detail-group"><span class="detail-label">Email:</span>{{ row[2] }}</div>
+                        <div class="detail-group"><span class="detail-label">Points:</span>{{ row[5] }}</div>
+                        <div class="detail-group"><span class="detail-label">Joined:</span>{{ row[8] }}</div>
+                    </div>
+                </div>
+                <div class="employee-footer">
+                    <button onclick="toggleDetails('{{ row[0] }}')" class="btn btn-outline" id="toggle-btn-{{ row[0] }}">
+                        <i class="fas fa-eye"></i> View Profile
+                    </button>
+                    <a href="/employee/tasks/{{ row[0] }}" class="btn btn-success">
+                        <i class="fas fa-tasks"></i> View Tasks
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/freelancer_list.js') }}"></script>
+</body>
+</html>

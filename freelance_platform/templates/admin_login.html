@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GigSync - Upload Content</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_login.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </div>
+        <a href="/" style="text-decoration: none;" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="upload-card">
+            <div class="card-header">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h2>Upload Learning Content</h2>
+            </div>
+            
+            <form id="uploadForm" action="/upload_content" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="contentTitle">Content Title</label>
+                    <input type="text" id="contentTitle" class="form-control" name="contentTitle" placeholder="Enter content title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contentDescription">Description</label>
+                    <textarea id="contentDescription" class="form-control" rows="3" name="contentDescription" placeholder="Enter content description" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Content Type</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="contentType" value="video" checked>
+                            Video
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="contentType" value="pdf">
+                            PDF Document
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Video URL Field (shown by default) -->
+                <div class="form-group" id="videoUrlField">
+                    <label for="videoUrl">Video URL</label>
+                    <input type="url" id="videoUrl" class="form-control" name="videoUrl" placeholder="https://example.com/video.mp4">
+                    <small class="text-muted">Supported platforms: YouTube, Vimeo, or direct video links</small>
+                </div>
+                
+                <!-- PDF Upload Field (hidden by default) -->
+                <div class="form-group" id="pdfUploadField" style="display: none;">
+                    <label>Upload PDF File</label>
+                    <label class="file-upload">
+                        <i class="fas fa-file-pdf"></i>
+                        <p>Click to browse or drag and drop your PDF file here</p>
+                        <span class="btn btn-secondary">Choose File</span>
+                        <input type="file" id="pdfFile" accept=".pdf" name="pdfFile">
+                    </label>
+                    <small class="text-muted">Max file size: 25MB</small>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-upload"></i>
+                        Upload Content
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between video and PDF fields
+        document.querySelectorAll('input[name="contentType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'video') {
+                    document.getElementById('videoUrlField').style.display = 'block';
+                    document.getElementById('pdfUploadField').style.display = 'none';
+                } else {
+                    document.getElementById('videoUrlField').style.display = 'none';
+                    document.getElementById('pdfUploadField').style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

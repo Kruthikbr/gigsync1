@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/view_details.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{{ url_for('tasks') }}" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/freelancer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('freelancer_tasks') }}" class="active"><i class="fas fa-tasks"></i> Browse Tasks</a></li>
+            <li><a href="{{ url_for('my_assigned_tasks') }}"><i class="fas fa-clipboard-check"></i> My Tasks</a></li>
+            <li><a href="/freelancer_profile"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+        <div class="user-profile">
+            <a href="/" style="text-decoration: none;" class="btn btn-primary"><i class="fas fa-sign-out"></i> Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-tasks"></i> Task Details</h1>
+        </div>
+        <!-- Photo Gallery -->
+        <div class="gallery">
+            {% for photo in photos %}
+            <div class="photo-card">
+                <img src="data:image/jpg;base64,{{photo[3]}}" alt="Task Photo" class="photo-img">
+                <div class="photo-details">
+                    <p class="photo-date">Task Id: {{ tid }}</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="no-photos">
+                <p>No photos found for this task.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

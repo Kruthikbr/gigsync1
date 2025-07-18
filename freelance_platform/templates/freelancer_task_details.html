@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Details | GigSync</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/freelancer_tasks.css') }}">
+    <style>
+        .task-details-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-section {
+            margin-bottom: 20px;
+        }
+        
+        .detail-section h3 {
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .detail-item {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            width: 140px;
+            color: #666;
+        }
+        
+        .detail-value {
+            flex: 1;
+        }
+        
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4a6fa5;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #3a5a80;
+        }
+        
+        .task-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #ffd580;
+            color: #8a6d3b;
+        }
+        
+        .status-in-progress {
+            background-color: #90caf9;
+            color: #31708f;
+        }
+        
+        .status-completed {
+            background-color: #a5d6a7;
+            color: #3c763d;
+        }
+        
+        .status-overdue {
+            background-color: #ef9a9a;
+            color: #a94442;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .request-button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .request-button:hover {
+            background-color: #218838;
+        }
+        
+        .skill-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #e9ecef;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #495057;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{{ url_for('tasks') }}" class="logo">
+            <i class="fas fa-handshake"></i> GigSync
+        </a>
+        <ul class="nav-links">
+            <li><a href="/freelancer_dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('freelancer_tasks') }}"><i class="fas fa-tasks"></i> Browse Tasks</a></li>
+            <li><a href="{{ url_for('my_assigned_tasks') }}"><i class="fas fa-clipboard-check"></i> My Tasks</a></li>
+            <li><a href="/freelancer_profile"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+        <div class="user-profile">
+            <a href="/" style="text-decoration: none;" class="btn btn-primary"><i class="fas fa-sign-out"></i> Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="task-details-container">
+            <div class="page-header">
+                <h1><i class="fas fa-clipboard-list"></i> Task Details</h1>
+            </div>
+            
+            <div class="detail-section">
+                <div class="detail-item">
+                    <div class="detail-label">Title:</div>
+                    <div class="detail-value">{{ task['title'] }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Category:</div>
+                    <div class="detail-value">{{ task['category'] }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Status:</div>
+                    <div class="detail-value">
+                        {% if task['status'] == 'pending' %}
+                            <span class="task-status status-pending"><i class="fas fa-clock"></i> Pending</span>
+                        {% elif task['status'] == 'in-progress' %}
+                            <span class="task-status status-in-progress"><i class="fas fa-spinner fa-spin"></i> In Progress</span>
+                        {% elif task['status'] == 'completed' %}
+                            <span class="task-status status-completed"><i class="fas fa-check"></i> Completed</span>
+                        {% else %}
+                            <span class="task-status status-overdue"><i class="fas fa-exclamation-circle"></i> Overdue</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Created:</div>
+                    <div class="detail-value">{{ task['created_at'] }}</div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h3>Description</h3>
+                <p>{{ task['description'] }}</p>
+            </div>
+            
+            <div class="detail-section">
+                <h3>Requirements</h3>
+                <div class="detail-item">
+                    <div class="detail-label">Budget:</div>
+                    <div class="detail-value">Rs. {{ task['budget'] }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Deadline:</div>
+                    <div class="detail-value">{{ task['deadline'] }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Skills Required:</div>
+                    <div class="detail-value">
+                        <div class="skills-container">
+                            {% for skill in task['skills'].split(',') %}
+                                <span class="skill-badge">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{{ url_for('freelancer_tasks') }}" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Tasks
+                </a>
+                
+                {% if not task['assigned_to'] %}
+                    <a href="/sendrequest/{{task['id']}}" class="request-button">
+                        <i class="fas fa-paper-plane"></i> Request This Task
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
